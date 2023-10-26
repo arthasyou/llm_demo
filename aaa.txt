@@ -1,0 +1,31 @@
+/home/ysx/miniconda3/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+Loading checkpoint shards: 100%|██████████| 8/8 [00:24<00:00,  3.11s/it]
+InternLMForCausalLM(
+  (model): InternLMModel(
+    (embed_tokens): Embedding(103168, 5120, padding_idx=0)
+    (layers): ModuleList(
+      (0-59): 60 x InternLMDecoderLayer(
+        (self_attn): InternLMAttention(
+          (q_proj): Linear4bit(in_features=5120, out_features=5120, bias=False)
+          (k_proj): Linear4bit(in_features=5120, out_features=5120, bias=False)
+          (v_proj): Linear4bit(in_features=5120, out_features=5120, bias=False)
+          (o_proj): Linear4bit(in_features=5120, out_features=5120, bias=False)
+          (rotary_emb): InternLMRotaryEmbedding()
+        )
+        (mlp): InternLMMLP(
+          (gate_proj): Linear4bit(in_features=5120, out_features=13824, bias=False)
+          (down_proj): Linear4bit(in_features=13824, out_features=5120, bias=False)
+          (up_proj): Linear4bit(in_features=5120, out_features=13824, bias=False)
+          (act_fn): SiLUActivation()
+        )
+        (input_layernorm): InternLMRMSNorm()
+        (post_attention_layernorm): InternLMRMSNorm()
+      )
+    )
+    (norm): InternLMRMSNorm()
+  )
+  (lm_head): Linear(in_features=5120, out_features=103168, bias=False)
+)
+InternLMTokenizer(name_or_path='internlm/internlm-chat-20b', vocab_size=103168, model_max_length=1000000000000000019884624838656, is_fast=False, padding_side='right', truncation_side='right', special_tokens={'bos_token': '<s>', 'eos_token': '</s>', 'unk_token': '<unk>', 'pad_token': '</s>'}, clean_up_tokenization_spaces=False)
+样本A:乙方有权在新作游戏开发过程中在角色设定、美术设定、玩法设定、Demo产出、游戏上线等多个时间节点对研发内容进行审核，甲方应提前在相关时间点以邮件方式通知乙方参与版本审核，并在邮件中通知相关的审核流程。请将样本A中的“新作游戏开发后的角色设定美术设定、玩法设定、Demo产出、游戏上线等多个时间节点”修改为“新作游戏开发过程中在角色设定、美术设定、玩法设定、Demo产出、游戏上线等多个时间节点”。请将样本A中的“甲方应主动在相关时间点以邮件方式通知乙方参与版本审核”修改为“甲方应提前在相关时间点以邮件方式通知乙方参与版本审核”。请在样本A中增加以下内容：“若甲乙双方均为在约定时间履行告知义务,所出现的损失由各方承担”。
