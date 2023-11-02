@@ -26,18 +26,6 @@ def print_trainable_parameters(model):
         f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
     )
 
-def create_prompt(content, question, answer):
-    # qst = question[0]
-    # ans = answer[0]
-    prompt_template = f"### Content\n{content}\n\n### Input\n{question}\n\n### Output\n{answer}</s>"
-    return prompt_template
-
-def format_data(samples):
-    result = tokenizer(samples['text'])
-    # result["labels"] = result["input_ids"].copy()
-    return result
-
-
 # main
 model = AutoModelForCausalLM.from_pretrained(
     "/home/ysx/models/internlm-chat-7b",
@@ -80,29 +68,19 @@ print_trainable_parameters(model)
 
 
 # Data
-dataset = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/zyqa")
-# dataset = load_dataset("ShengbinYue/DISC-Law-SFT")
-print(dataset)
-
-# newdata = dataset.select(range(100))
-mapped_dataset = dataset.map(
-    format_data,
-    remove_columns=['text']
-    # batched=True
-)
-
-print(mapped_dataset)
+dataset = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/lora")
 
 # Training
 trainer = transformers.Trainer(
     model=model,
-    train_dataset=mapped_dataset,
+    train_dataset=dataset,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=1,
-        gradient_accumulation_steps=2,
+        per_device_train_batch_size=8,
+        gradient_accumulation_steps=8,
         warmup_steps=100,
-        max_steps=500,
-        # save_steps=100,
+        num_train_epochs=3,
+        # max_steps=30000,
+        save_steps=200,
         learning_rate=1e-3,
         fp16=True,
         logging_steps=10,
