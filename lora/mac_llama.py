@@ -84,7 +84,7 @@ print_trainable_parameters(model)
 
 
 # Data
-zydata = load_from_disk("/Users/you/src/AI/llm_demo/data/datasets/xbzy")
+zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/xbzy")
 mapped_dataset = zydata.map(
     format_zyya,
     remove_columns=['text']
