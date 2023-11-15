@@ -53,10 +53,6 @@ def generate_zy_prompt(example):
     s = replace_qa(s)
     return f"{f}\n{s}"
 
-# def generate_origin(example):
-#     r = "\n".join(example)
-#     return r
-
 def generate_origin(example):
     r = example
     return r
