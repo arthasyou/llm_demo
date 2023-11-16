@@ -1,3 +1,18 @@
-python3 convert.py --outfile models/7B/zy-f16.bin --outtype f16 ../../llama2/meta_models/llama-2-7b-chat
+python3 convert.py --outfile models/7B/zy-f16.bin --outtype f16 /Users/you/src/llm_demo/outputs/zy_base
 ./quantize  ./models/7B/zy-f16.bin ./models/7B/zy-q4.bin q4_0
-./main -m ./models/7B/zy-q4.bin -n 1024 --repeat_penalty 1.0 --color -i -r "User:" -f ./prompts/chat-with-bob.txt
+./main -m ./models/7B/zy-q4.bin -n 1024 --repeat_penalty 1.0 --color -i -r "用户:" -f ./prompts/chat-with-baichuan.txt
+
+
+python3 convert.py --outfile models/7B/origin-f16.bin --outtype f16 /Users/you/Documents/chinese-alpaca-2-7b
+./quantize  ./models/7B/origin-f16.bin ./models/7B/origin-q4.bin q4_0
+./main -m ./models/7B/origin-q4.bin -n 1024 --repeat_penalty 1.0 --color -i -r "用户:" -f ./prompts/chat-with-baichuan.txt
+
+
+Transcript of a dialog, where the User interacts with an Assistant named Bob. Bob is helpful,
+kind, honest, good at writing, and never fails to answer the User's requests immediately and with precision.
+   2
+   3 User: Hello, Bob.
+   4 Bob: Hello. How may I help you today?
+   5 User: Please tell me the largest city in Europe.
+   6 Bob: Sure. The largest city in Europe is Moscow, the capital of Russia.
+   7 User: can you speak chinese
