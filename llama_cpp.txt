@@ -1,6 +1,6 @@
-python3 convert.py --outfile models/7B/zy-f16.bin --outtype f16 /Users/you/src/llm_demo/outputs/zy_base
+python3 convert.py --outfile models/7B/zy-f16.bin --outtype f16 /Users/you/src/llm_demo/outputs/zysft
 ./quantize  ./models/7B/zy-f16.bin ./models/7B/zy-q4.bin q4_0
-./main -m ./models/7B/zy-q4.bin -n 1024 --repeat_penalty 1.0 --color -i -r "用户:" -f ./prompts/chat-with-baichuan.txt
+./main -m ./models/7B/zy-q4.bin -n 1024 --repeat_penalty 1.0 --color -i -r "user:" -f ./prompts/alpaca.txt
 
 
 python3 convert.py --outfile models/7B/origin-f16.bin --outtype f16 /Users/you/Documents/chinese-alpaca-2-7b
