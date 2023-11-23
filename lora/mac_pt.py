@@ -141,7 +141,7 @@ trainer = transformers.Trainer(
         max_steps=5000,
         save_steps=200,
         learning_rate=1e-4,
-        fp16=True,
+        # fp16=True,
         logging_steps=10,
         output_dir='../outputs'
     ),
