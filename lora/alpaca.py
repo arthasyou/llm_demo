@@ -30,12 +30,12 @@ def generate_prompt(example):
         return (
             "Below is an instruction that describes a task, paired with an input that provides further context. "
             "Write a response that appropriately completes the request.\n\n"
-            f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:"
+            f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:\n{example['output']}<s>"
         )
     return (
         "Below is an instruction that describes a task. "
         "Write a response that appropriately completes the request.\n\n"
-        f"### Instruction:\n{example['instruction']}\n\n### Response:"
+        f"### Instruction:\n{example['instruction']}\n\n### Response:\n{example['output']}<s>"
     )
 
 def format_alpaca_data(sample):
@@ -97,23 +97,25 @@ print_trainable_parameters(model)
 
 
 # Data
-zydata = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/xbzy")
+zydata = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/zysft")
 mapped_dataset = zydata.map(
     format_alpaca_data,
     remove_columns=['instruction', 'input', 'output']
 )
+
+print(tokenizer.decode(mapped_dataset[0]["input_ids"]), "\n")
 
 # Training
 trainer = transformers.Trainer(
     model=model,
     train_dataset=mapped_dataset,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=4,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=2,
         warmup_steps=100,
-        # num_train_epochs=3.5,
-        max_steps=600,
-        save_steps=200,
+        num_train_epochs=3,
+        max_steps=1000,
+        save_steps=500,
         learning_rate=1e-4,
         fp16=True,
         logging_steps=10,

@@ -1,13 +1,12 @@
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
-
 import torch
 import torch.nn as nn
 import bitsandbytes as bnb
 import transformers
 from transformers import AutoTokenizer, AutoConfig, AutoModelForCausalLM
 from peft import LoraConfig, get_peft_model
-from datasets import load_dataset, load_from_disk
+from datasets import load_dataset, load_from_disk, concatenate_datasets
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 class CastOutputToFloat(nn.Sequential):
     def forward(self, x): return super().forward(x).to(torch.float32)
@@ -26,29 +25,71 @@ def print_trainable_parameters(model):
         f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
     )
 
-def create_prompt(content, question, answer):
-    # qst = question[0]
-    # ans = answer[0]
-    prompt_template = f"### Content\n{content}\n\n### Input\n{question}\n\n### Output\n{answer}</s>"
-    return prompt_template
+# -------------------------------------------------------------
+# 数据处理
+# -------------------------------------------------------------
 
-def format_data(samples):
-    result = tokenizer(samples['text'], max_length=2048, padding='max_length')
+def generate_origin(example):
+    r = example + "<s>" 
+    return r
+
+def format_zyya(sample):
+    r = generate_origin(sample['text'])
+    result = tokenizer(r, max_length=1024, padding='max_length')
+    input_ids = move_to_end(result["input_ids"], result["input_ids"][0])
+    attention_mask = move_to_end(result["attention_mask"], 0)
+
+    result["input_ids"] = input_ids
+    result["attention_mask"] = attention_mask
+
     result["labels"] = result["input_ids"].copy()
     return result
 
+def generate_prompt(example):
+    if example["input"]:
+        return (
+            "Below is an instruction that describes a task, paired with an input that provides further context. "
+            "Write a response that appropriately completes the request.\n\n"
+            f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:\n{example['output']}<s>"
+        )
+    return (
+        "Below is an instruction that describes a task. "
+        "Write a response that appropriately completes the request.\n\n"
+        f"### Instruction:\n{example['instruction']}\n\n### Response:\n{example['output']}<s>"
+    )
+
+def format_alpaca_data(sample):
+    r = generate_prompt(sample)
+    result = tokenizer(r, max_length=1024, padding='max_length')
+
+    input_ids = move_to_end(result["input_ids"], result["input_ids"][0])
+    attention_mask = move_to_end(result["attention_mask"], 0)
+
+    result["input_ids"] = input_ids
+    result["attention_mask"] = attention_mask
+
+    result["labels"] = result["input_ids"].copy()
+    return result
+
+def move_to_end(arr, target):
+    count_target = arr.count(target)
+    arr = [x for x in arr if x != target]
+    arr.extend([target] * count_target)
+    return arr
+
+# -------------------------------------------------------------
+# 数据处理 end
+# -------------------------------------------------------------
 
 # main
 model = AutoModelForCausalLM.from_pretrained(
-    "/home/ysx/models/internlm-chat-7b",
-    load_in_4bit=True, 
+    "/home/ysx/models/chinese-alpaca-2-7b",
+    load_in_4bit=True,
     device_map='auto',
-    trust_remote_code=True
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
-   "/home/ysx/models/internlm-chat-7b",
-   trust_remote_code=True
+   "/home/ysx/models/chinese-alpaca-2-7b",
 )
 
 #Freezing the original weights
@@ -80,26 +121,29 @@ print_trainable_parameters(model)
 
 
 # Data
-dataset = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/zyll1")
-# newdata = dataset.select(range(100))
-mapped_dataset = dataset.map(
-    format_data,
-    remove_columns="text",
-    batched=True
+
+zydata = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/xbzy")
+data_token_0 = zydata.map(
+    format_zyya,
+    remove_columns=['text']
 )
 
-print(mapped_dataset)
+print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
+
+# 
 
 # Training
 trainer = transformers.Trainer(
     model=model,
-    train_dataset=mapped_dataset,
+    train_dataset=data_token_0,
     args=transformers.TrainingArguments(
         per_device_train_batch_size=2,
-        gradient_accumulation_steps=8,
+        gradient_accumulation_steps=4,
         warmup_steps=100,
-        max_steps=3000,
-        learning_rate=1e-3,
+        # num_train_epochs=3,
+        max_steps=5000,
+        save_steps=200,
+        learning_rate=1e-4,
         fp16=True,
         logging_steps=10,
         output_dir='../outputs'

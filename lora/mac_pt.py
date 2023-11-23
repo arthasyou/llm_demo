@@ -25,37 +25,9 @@ def print_trainable_parameters(model):
         f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
     )
 
-def generate_prompt(example):
-    if example["input"]:
-        return (
-            "Below is an instruction that describes a task, paired with an input that provides further context. "
-            "Write a response that appropriately completes the request.\n\n"
-            f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:"
-        )
-    return (
-        "Below is an instruction that describes a task. "
-        "Write a response that appropriately completes the request.\n\n"
-        f"### Instruction:\n{example['instruction']}\n\n### Response:"
-    )
-
-def replace_qa(text):
-    if text.startswith("患者"):
-        result = "### User:\n" + text[3:]
-        return result
-    else:
-        result = "### Assist:\n" + text[3:]
-        return result
-    
-def generate_zy_prompt(example):
-    f = example[0]
-    s = example[1]
-    f = replace_qa(f)
-    s = replace_qa(s)
-    return f"{f}\n{s}"
-
-# def generate_origin(example):
-#     r = "\n".join(example)
-#     return r
+# -------------------------------------------------------------
+# 数据处理
+# -------------------------------------------------------------
 
 def generate_origin(example):
     r = example + "<s>" 
@@ -73,15 +45,29 @@ def format_zyya(sample):
     result["labels"] = result["input_ids"].copy()
     return result
 
-def format_chat(sample):
-    r = generate_zy_prompt(sample['text'])
-    result = tokenizer(r, max_length=1024, padding='max_length')
-    result["labels"] = result["input_ids"].copy()
-    return result
+def generate_prompt(example):
+    if example["input"]:
+        return (
+            "Below is an instruction that describes a task, paired with an input that provides further context. "
+            "Write a response that appropriately completes the request.\n\n"
+            f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:\n{example['output']}<s>"
+        )
+    return (
+        "Below is an instruction that describes a task. "
+        "Write a response that appropriately completes the request.\n\n"
+        f"### Instruction:\n{example['instruction']}\n\n### Response:\n{example['output']}<s>"
+    )
 
 def format_alpaca_data(sample):
     r = generate_prompt(sample)
     result = tokenizer(r, max_length=1024, padding='max_length')
+
+    input_ids = move_to_end(result["input_ids"], result["input_ids"][0])
+    attention_mask = move_to_end(result["attention_mask"], 0)
+
+    result["input_ids"] = input_ids
+    result["attention_mask"] = attention_mask
+
     result["labels"] = result["input_ids"].copy()
     return result
 
@@ -91,15 +77,19 @@ def move_to_end(arr, target):
     arr.extend([target] * count_target)
     return arr
 
+# -------------------------------------------------------------
+# 数据处理 end
+# -------------------------------------------------------------
+
 # main
 model = AutoModelForCausalLM.from_pretrained(
-    "/home/ysx/models/chinese-alpaca-2-7b",
+    "/Users/you/Documents/chinese-alpaca-2-7b",
     load_in_4bit=True,
     device_map='auto',
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
-   "/home/ysx/models/chinese-alpaca-2-7b",
+   "/Users/you/Documents/chinese-alpaca-2-7b",
 )
 
 #Freezing the original weights
@@ -131,38 +121,27 @@ print_trainable_parameters(model)
 
 
 # Data
-zydata = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/xbzy")
-mapped_dataset = zydata.map(
+
+zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/xbzy")
+data_token_0 = zydata.map(
     format_zyya,
     remove_columns=['text']
 )
 
-# print(mapped_dataset[0])
+print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
 
-# chat_data = load_from_disk("/Users/you/src/llm_demo/data/datasets/zy_chat")
-# chat_dataset = chat_data.map(
-#     format_chat,
-#     remove_columns=['text']
-# )
-
-# junk_data = load_dataset('json', data_files='/Users/you/src/llm_demo/data/json/alpaca_data_cleaned_archive.json')
-# junk_dataset = junk_data.map(
-#     format_alpaca_data,
-#     remove_columns=['instruction', 'output', 'input']
-# )
-
-# combined_dataset = concatenate_datasets([mapped_dataset, chat_dataset, junk_dataset['train']])
+# 
 
 # Training
 trainer = transformers.Trainer(
     model=model,
-    train_dataset=mapped_dataset,
+    train_dataset=data_token_0,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=4,
+        per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
         warmup_steps=100,
-        # num_train_epochs=3.5,
-        max_steps=600,
+        # num_train_epochs=3,
+        max_steps=5000,
         save_steps=200,
         learning_rate=1e-4,
         fp16=True,
