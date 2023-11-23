@@ -5,8 +5,6 @@ import transformers
 from transformers import AutoTokenizer, AutoConfig, AutoModelForCausalLM
 from peft import LoraConfig, get_peft_model
 from datasets import load_dataset, load_from_disk, concatenate_datasets
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 class CastOutputToFloat(nn.Sequential):
     def forward(self, x): return super().forward(x).to(torch.float32)
@@ -84,8 +82,7 @@ def move_to_end(arr, target):
 # main
 model = AutoModelForCausalLM.from_pretrained(
     "/Users/you/Documents/chinese-alpaca-2-7b",
-    load_in_4bit=True,
-    device_map='auto',
+    device_map='mps',
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
@@ -152,3 +149,6 @@ trainer = transformers.Trainer(
 )
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 trainer.train()
+
+merged_model = model.merge_and_unload()
+merged_model.save_pretrain("../outputs/zysft")
