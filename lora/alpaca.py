@@ -30,12 +30,18 @@ def generate_prompt(example):
         return (
             "Below is an instruction that describes a task, paired with an input that provides further context. "
             "Write a response that appropriately completes the request.\n\n"
-            f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:\n{example['output']}<s>"
+            f'''### Instruction:\n{example['instruction']}\n\n
+            ### Input:\n{example['input']}\n\n
+            ### Response:\n{example['output']}\n\n
+            本次回答已结束。\n\n
+            </s>'''
         )
     return (
-        "Below is an instruction that describes a task. "
+        f'''Below is an instruction that describes a task. "
         "Write a response that appropriately completes the request.\n\n"
-        f"### Instruction:\n{example['instruction']}\n\n### Response:\n{example['output']}<s>"
+        f"### Instruction:\n{example['instruction']}\n\n### Response:\n{example['output']}\n\n
+        本次回答已结束。\n\n
+        </s>'''
     )
 
 def format_alpaca_data(sample):
@@ -110,11 +116,11 @@ trainer = transformers.Trainer(
     model=model,
     train_dataset=mapped_dataset,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=1,
-        gradient_accumulation_steps=2,
+        per_device_train_batch_size=4,
+        gradient_accumulation_steps=8,
         warmup_steps=100,
         num_train_epochs=3,
-        max_steps=1000,
+        max_steps=10000,
         save_steps=500,
         learning_rate=1e-4,
         fp16=True,

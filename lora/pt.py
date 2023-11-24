@@ -30,7 +30,7 @@ def print_trainable_parameters(model):
 # -------------------------------------------------------------
 
 def generate_origin(example):
-    r = example + "<s>" 
+    r = example + "</s>" 
     return r
 
 def format_zyya(sample):

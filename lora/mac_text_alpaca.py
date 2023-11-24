@@ -83,13 +83,13 @@ def move_to_end(arr, target):
 
 # main
 model = AutoModelForCausalLM.from_pretrained(
-    "/home/ysx/models/chinese-alpaca-2-7b",
+    "/Users/you/Documents/chinese-alpaca-2-7b",
     load_in_4bit=True,
     device_map='auto',
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
-   "/home/ysx/models/chinese-alpaca-2-7b",
+   "/Users/you/Documents/chinese-alpaca-2-7b",
 )
 
 #Freezing the original weights
@@ -122,13 +122,13 @@ print_trainable_parameters(model)
 
 # Data
 
-zydata = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/xbzy")
+zydata = load_from_disk("/Users/you/llm_demo/data/datasets/xbzy")
 data_token_0 = zydata.map(
     format_zyya,
     remove_columns=['text']
 )
 
-sftdata = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/zysft")
+sftdata = load_from_disk("/Users/you/llm_demo/data/datasets/zysft")
 data_token_1 = sftdata.map(
     format_alpaca_data,
     remove_columns=['instruction', 'input', 'output']
@@ -152,7 +152,6 @@ trainer = transformers.Trainer(
         max_steps=3000,
         save_steps=200,
         learning_rate=1e-4,
-        fp16=True,
         logging_steps=10,
         output_dir='../outputs'
     ),
