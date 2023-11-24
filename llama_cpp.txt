@@ -1,4 +1,4 @@
-python3 convert.py --outfile models/7B/zy-f16.bin --outtype f16 /Users/you/src/llm_demo/outputs/zysft
+python3 convert.py --outfile models/7B/zy-f16.bin --outtype f16 /Users/you/models/Users/you/models/zy_alpaca
 ./quantize  ./models/7B/zy-f16.bin ./models/7B/zy-q4.bin q4_0
 ./main -m ./models/7B/zy-q4.bin -n 1024 --repeat_penalty 1.0 --color -i -r "user:" -f ./prompts/alpaca.txt
 

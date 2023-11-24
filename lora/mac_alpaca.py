@@ -28,12 +28,12 @@ def generate_prompt(example):
         return (
             "Below is an instruction that describes a task, paired with an input that provides further context. "
             "Write a response that appropriately completes the request.\n\n"
-            f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:"
+            f'''### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:\n{example['output']}\n\n本次回答已结束。\n\n</s>'''
         )
     return (
         "Below is an instruction that describes a task. "
         "Write a response that appropriately completes the request.\n\n"
-        f"### Instruction:\n{example['instruction']}\n\n### Response:"
+        f'''### Instruction:\n{example['instruction']}\n\n### Response:\n{example['output']}\n\n本次回答已结束。\n\n</s>'''
     )
 
 def format_alpaca_data(sample):
