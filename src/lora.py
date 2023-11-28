@@ -62,7 +62,7 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
-   "/Users/you/Documents/chinese-alpaca-2-7b",
+   "/Users/you/src/llm_demo/outputs/zysft",
 )
 
 #Freezing the original weights
