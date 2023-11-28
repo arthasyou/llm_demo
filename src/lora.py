@@ -38,7 +38,7 @@ def generate_prompt(example):
 
 def format_alpaca_data(sample):
     r = generate_prompt(sample)
-    result = tokenizer(r, padding=True, truncation=True, max_length=1024)
+    result = tokenizer(r, padding="max_length", truncation=True, max_length=1024)
 
     input_ids = move_to_end(result["input_ids"], result["input_ids"][0])
     attention_mask = move_to_end(result["attention_mask"], 0)
@@ -97,6 +97,7 @@ print_trainable_parameters(model)
 zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/zysft")
 mapped_dataset = zydata.map(
     format_alpaca_data,
+    batched=True,
     remove_columns=['instruction', 'input', 'output']
 )
 
@@ -113,14 +114,14 @@ trainer = transformers.Trainer(
         learning_rate=1e-4,
         logging_steps=10,
         save_steps=100,
-        save_total_limit=1,  # 保存最近的 1 个检查点
-        save_strategy="epoch",  
         output_dir='../outputs'
     ),
     data_collator=transformers.DataCollatorForLanguageModeling(tokenizer, mlm=False)
 )
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 trainer.train()
+
+model.save_pretrained("../outputs/zylora")
 
 # merge base model and lora model as a standalone model.
 # merged_model = model.merge_and_unload()
