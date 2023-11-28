@@ -97,7 +97,7 @@ print_trainable_parameters(model)
 zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/zysft")
 mapped_dataset = zydata.map(
     format_alpaca_data,
-    batched=True,
+    # batched=True,
     remove_columns=['instruction', 'input', 'output']
 )
 
