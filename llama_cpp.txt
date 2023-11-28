@@ -8,3 +8,4 @@ python3 convert.py --outfile models/7B/origin-f16.bin --outtype f16 /Users/you/D
 ./main -m ./models/7B/origin-q4.bin -n 1024 --repeat_penalty 1.0 --color -i -r "用户:" -f ./prompts/chat-with-baichuan.txt
 
 
+python3 convert.py --outfile models/7B/zy-f16.bin --outtype f16 /Users/you/src/llm_demo/outputs/zysft

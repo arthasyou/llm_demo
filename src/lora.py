@@ -109,7 +109,7 @@ trainer = transformers.Trainer(
         per_device_train_batch_size=1,
         gradient_accumulation_steps=1,
         warmup_steps=10,
-        num_train_epochs=3,
+        num_train_epochs=1,
         # max_steps=210,  
         learning_rate=1e-4,
         logging_steps=10,
@@ -121,10 +121,10 @@ trainer = transformers.Trainer(
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 trainer.train()
 
-# model.save_pretrained("../outputs/zylora")
+model.save_pretrained("../outputs/zylora")
 
 # merge base model and lora model as a standalone model.
-merged_model = model.merge_and_unload()
-merged_model.save_pretrained("../outputs/zysft")
-merged_model.config.save_pretrained("../outputs/zysft")
-tokenizer.save_pretrained("../outputs/zysft")
+# merged_model = model.merge_and_unload()
+# merged_model.save_pretrained("../outputs/zysft")
+# merged_model.config.save_pretrained("../outputs/zysft")
+# tokenizer.save_pretrained("../outputs/zysft")
