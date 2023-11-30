@@ -96,7 +96,7 @@ print_trainable_parameters(model)
 zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/wx")
 data_token_0 = zydata.map(
     format_text,
-    batched = True,
+    # batched = True,
     remove_columns = ['text']
 )
 
