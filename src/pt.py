@@ -109,11 +109,11 @@ trainer = transformers.Trainer(
     model=model,
     train_dataset=data_token_0,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=4,
-        warmup_steps=30,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=2,
+        # warmup_steps=30,
         num_train_epochs=5,
-        # max_steps=5000,
+        max_steps=10,
         save_steps=200,
         learning_rate=1e-4,
         # fp16=True,
@@ -124,6 +124,8 @@ trainer = transformers.Trainer(
 )
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 trainer.train()
+
+model.save_pretrain("../outputs/zylora")
 
 merged_model = model.merge_and_unload()
 merged_model.save_pretrain("../outputs/zypt")
