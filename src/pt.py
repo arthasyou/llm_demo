@@ -100,7 +100,7 @@ data_token_0 = zydata.map(
     remove_columns = ['text']
 )
 
-print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
+# print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
 
 # 
 
@@ -125,9 +125,9 @@ trainer = transformers.Trainer(
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 trainer.train()
 
-model.save_pretrain("../outputs/zylora")
+model.save_pretrained("../outputs/zylora")
 
 merged_model = model.merge_and_unload()
-merged_model.save_pretrain("../outputs/zypt")
+merged_model.save_pretrained("../outputs/zypt")
 merged_model.config.save_pretrained("../outputs/zypt")
 tokenizer.save_pretrained("../outputs/zypt")
