@@ -3,9 +3,6 @@
 echo "Running prepare_data.py..."
 python ../src/prepare_data.py
 
-echo "Running load_data.py..."
-python ../src/load_data.py
-
 echo "Running lora.py..."
 python ../src/lora.py
 

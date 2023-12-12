@@ -15,6 +15,9 @@ tokenizer = AutoTokenizer.from_pretrained(
 model = PeftModel.from_pretrained(inference_model, peft_model_id, device_map="mps")
 
 merged_model = model.merge_and_unload()
-# merged_model.config.save_pretrained("../outputs/zysft")
-tokenizer.save_pretrained("../outputs/zysft")
-merged_model.save_pretrained("../outputs/zysft")
+merged_model.config.do_sample = True
+merged_model.config.use_cache = True
+
+merged_model.save_pretrained("../outputs/zypt")
+merged_model.config.save_pretrained("../outputs/zypt")
+tokenizer.save_pretrained("../outputs/zypt")

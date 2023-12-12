@@ -102,7 +102,7 @@ for param in model.parameters():
 model.gradient_checkpointing_enable()  # reduce number of stored activations
 model.enable_input_require_grads()
 
-model.lm_head = CastOutputToFloat(model.lm_head)
+# model.lm_head = CastOutputToFloat(model.lm_head)
 
 # print(model)
 
