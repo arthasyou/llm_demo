@@ -33,6 +33,7 @@ MANIFEST
 outputs/
 datasets/
 test/output_dir
+/cache/
 
 
 # PyInstaller
