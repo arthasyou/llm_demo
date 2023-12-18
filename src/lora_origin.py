@@ -57,12 +57,12 @@ def move_to_end(arr, target):
 
 # main
 model = AutoModelForCausalLM.from_pretrained(
-    "/Users/you/Documents/chinese-alpaca-2-7b",
+    "/Users/you/models/chinese-alpaca-2-7b",
     device_map='mps',
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
-   "/Users/you/Documents/chinese-alpaca-2-7b",
+   "/Users/you/models/chinese-alpaca-2-7b",
 )
 
 #Freezing the original weights

@@ -40,7 +40,7 @@ def generate_prompt(example):
 
 def format_alpaca_data(sample):
     r = generate_prompt(sample)
-    result = tokenizer(r, max_length=1024, padding='max_length')
+    result = tokenizer(r, max_length=512, padding='max_length')
 
     input_ids = move_to_end(result["input_ids"], result["input_ids"][0])
     attention_mask = move_to_end(result["attention_mask"], 0)
@@ -59,13 +59,15 @@ def move_to_end(arr, target):
 
 # main
 model = AutoModelForCausalLM.from_pretrained(
-    "/home/ysx/models/chinese-alpaca-2-7b",
+    "/home/ysx/models/internlm-chat-7b",
     load_in_4bit=True,
     device_map='auto',
+    trust_remote_code=True
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
-   "/home/ysx/models/chinese-alpaca-2-7b",
+   "/home/ysx/models/internlm-chat-7b",
+   trust_remote_code=True
 )
 
 #Freezing the original weights
@@ -110,11 +112,11 @@ trainer = transformers.Trainer(
     model=model,
     train_dataset=mapped_dataset,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=8,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=1,
         warmup_steps=100,
-        num_train_epochs=3,
-        max_steps=10000,
+        # num_train_epochs=3,
+        max_steps=3000,
         save_steps=500,
         learning_rate=1e-4,
         fp16=True,
