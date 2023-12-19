@@ -125,11 +125,11 @@ trainer = transformers.Trainer(
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 trainer.train()
 
-model.save_pretrained("../outputs/zylora")
+model.save_pretrained("../outputs/zylora_7B")
 
 merged_model = model.merge_and_unload()
 merged_model.config.do_sample = True
 merged_model.config.use_cache = True
-merged_model.save_pretrained("../outputs/zypt")
-merged_model.config.save_pretrained("../outputs/zypt")
-tokenizer.save_pretrained("../outputs/zypt")
+merged_model.save_pretrained("../outputs/zypt_7B")
+merged_model.config.save_pretrained("../outputs/zypt_7B")
+tokenizer.save_pretrained("../outputs/zypt_7B")
