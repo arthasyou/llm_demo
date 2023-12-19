@@ -100,7 +100,7 @@ data_token_0 = zydata.map(
     remove_columns = ['text']
 )
 
-# print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
+print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
 
 # 
 
