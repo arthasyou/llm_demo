@@ -93,7 +93,7 @@ print_trainable_parameters(model)
 
 # Data
 
-zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/wx")
+zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/zypt")
 data_token_0 = zydata.map(
     format_text,
     # batched = True,
