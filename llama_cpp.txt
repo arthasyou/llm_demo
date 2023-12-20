@@ -23,4 +23,5 @@ python3 ~/src/llama.cpp/convert.py --outfile ~/models/llamacpp/13B-meta-f16.bin 
 mv ~/models/llamacpp/13B-meta-q4.bin ~/text-generation-webui/models/
 ~/src/llama.cpp/main -m ~/text-generation-webui/models/13B-meta-q4.bin -n 1024 --repeat_penalty 1.0 --color -i -r "user:" -f ~/src/llama.cpp/prompts/abx.txt
 
-~/src/llama.cpp/main -m ~/text-generation-webui/models/zy13B-q4.bin -n 1024 --repeat_penalty 1.0 --color 
+~/src/llama.cpp/main -m ~/text-generation-webui/models/zy13B-q4.bin -n 1024 --repeat_penalty 1.0 --color -i
+~/src/llama.cpp/main -m ~/text-generation-webui/models/zy7B-q4.bin -n 1024 --repeat_penalty 1.0 --color -i
