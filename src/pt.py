@@ -93,14 +93,14 @@ print_trainable_parameters(model)
 
 # Data
 
-zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/wx")
+zydata = load_from_disk("/Users/you/src/llm_demo/data/datasets/zypt")
 data_token_0 = zydata.map(
     format_text,
     # batched = True,
     remove_columns = ['text']
 )
 
-# print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
+print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
 
 # 
 
@@ -109,12 +109,12 @@ trainer = transformers.Trainer(
     model=model,
     train_dataset=data_token_0,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=1,
-        gradient_accumulation_steps=2,
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=4,
         # warmup_steps=30,
-        num_train_epochs=5,
-        max_steps=10,
-        save_steps=200,
+        num_train_epochs=3,
+        # max_steps=4000,
+        save_steps=500,
         learning_rate=1e-4,
         # fp16=True,
         logging_steps=10,
@@ -125,11 +125,11 @@ trainer = transformers.Trainer(
 model.config.use_cache = False  # silence the warnings. Please re-enable for inference!
 trainer.train()
 
-model.save_pretrained("../outputs/zylora")
+model.save_pretrained("../outputs/zylora_13B")
 
 merged_model = model.merge_and_unload()
 merged_model.config.do_sample = True
 merged_model.config.use_cache = True
-merged_model.save_pretrained("../outputs/zypt")
-merged_model.config.save_pretrained("../outputs/zypt")
-tokenizer.save_pretrained("../outputs/zypt")
+merged_model.save_pretrained("../outputs/zypt_13B")
+merged_model.config.save_pretrained("../outputs/zypt_13B")
+tokenizer.save_pretrained("../outputs/zypt_13B")
