@@ -30,52 +30,16 @@ def print_trainable_parameters(model):
 # -------------------------------------------------------------
 
 def generate_origin(example):
-    r = example + "</s>" 
+    r = example
     return r
 
 def format_zyya(sample):
     r = generate_origin(sample['text'])
     result = tokenizer(r, max_length=1024, padding='max_length')
-    input_ids = move_to_end(result["input_ids"], result["input_ids"][0])
-    attention_mask = move_to_end(result["attention_mask"], 0)
-
-    result["input_ids"] = input_ids
-    result["attention_mask"] = attention_mask
 
     result["labels"] = result["input_ids"].copy()
     return result
 
-def generate_prompt(example):
-    if example["input"]:
-        return (
-            "Below is an instruction that describes a task, paired with an input that provides further context. "
-            "Write a response that appropriately completes the request.\n\n"
-            f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:\n{example['output']}<s>"
-        )
-    return (
-        "Below is an instruction that describes a task. "
-        "Write a response that appropriately completes the request.\n\n"
-        f"### Instruction:\n{example['instruction']}\n\n### Response:\n{example['output']}<s>"
-    )
-
-def format_alpaca_data(sample):
-    r = generate_prompt(sample)
-    result = tokenizer(r, max_length=1024, padding='max_length')
-
-    input_ids = move_to_end(result["input_ids"], result["input_ids"][0])
-    attention_mask = move_to_end(result["attention_mask"], 0)
-
-    result["input_ids"] = input_ids
-    result["attention_mask"] = attention_mask
-
-    result["labels"] = result["input_ids"].copy()
-    return result
-
-def move_to_end(arr, target):
-    count_target = arr.count(target)
-    arr = [x for x in arr if x != target]
-    arr.extend([target] * count_target)
-    return arr
 
 # -------------------------------------------------------------
 # 数据处理 end
@@ -83,14 +47,15 @@ def move_to_end(arr, target):
 
 # main
 model = AutoModelForCausalLM.from_pretrained(
-    "hfl/chinese-alpaca-2-7b",
-    # load_in_4bit=True,
-    load_in_8bit=True,
+    "/home/ysx/models/internlm-chat-7b",
+    load_in_4bit=True,
     device_map='auto',
+    trust_remote_code=True
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
-   "hfl/chinese-alpaca-2-7b",
+   "/home/ysx/models/internlm-chat-7b",
+   trust_remote_code=True
 )
 
 #Freezing the original weights
@@ -138,8 +103,8 @@ trainer = transformers.Trainer(
     model=model,
     train_dataset=data_token_0,
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=1,
-        gradient_accumulation_steps=1,
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=4,
         warmup_steps=100,
         num_train_epochs=3,
         max_steps=3000,
