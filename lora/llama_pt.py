@@ -135,22 +135,18 @@ model = get_peft_model(model, config)
 print_trainable_parameters(model)
 
 
-
-
-# 
-
 # Training
 trainer = transformers.Trainer(
     model=model,
     train_dataset=data_token_0,
     args=transformers.TrainingArguments(
         per_device_train_batch_size=8,
-        gradient_accumulation_steps=8,
+        gradient_accumulation_steps=2,
         warmup_steps=100,
         num_train_epochs=3,
-        max_steps=3000,
+        max_steps=15000,
         save_steps=200,
-        learning_rate=1e-4,
+        learning_rate=1e-3,
         fp16=True,
         logging_steps=10,
         output_dir='../outputs'

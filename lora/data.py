@@ -1,13 +1,12 @@
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
-
 import torch
 import torch.nn as nn
 import bitsandbytes as bnb
 import transformers
 from transformers import AutoTokenizer, AutoConfig, AutoModelForCausalLM
 from peft import LoraConfig, get_peft_model
-from datasets import load_dataset, load_from_disk
+from datasets import load_dataset, load_from_disk, concatenate_datasets
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 class CastOutputToFloat(nn.Sequential):
     def forward(self, x): return super().forward(x).to(torch.float32)
@@ -26,41 +25,51 @@ def print_trainable_parameters(model):
         f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
     )
 
-def create_prompt(content, question, answer):
-    # qst = question[0]
-    # ans = answer[0]
-    prompt_template = f"### Content\n{content}\n\n### Input\n{question}\n\n### Output\n{answer}</s>"
-    return prompt_template
+# -------------------------------------------------------------
+# 数据处理
+# -------------------------------------------------------------
 
-def format_data(samples):
-    result = tokenizer(samples['text'], max_length=1024, padding='max_length')
+def generate_origin(example):
+    r = example + "</s>" 
+    return r
+
+def format_zyya(sample):
+    r = generate_origin(sample['text'])
+    result = tokenizer(r, max_length=1024, padding='max_length')
+    input_ids = move_to_end(result["input_ids"], result["input_ids"][0])
+    attention_mask = move_to_end(result["attention_mask"], 0)
+
+    result["input_ids"] = input_ids
+    result["attention_mask"] = attention_mask
+
     result["labels"] = result["input_ids"].copy()
     return result
 
+def move_to_end(arr, target):
+    count_target = arr.count(target)
+    arr = [x for x in arr if x != target]
+    arr.extend([target] * count_target)
+    return arr
+
+# -------------------------------------------------------------
+# 数据处理 end
+# -------------------------------------------------------------
 
 # main
 
 
 tokenizer = AutoTokenizer.from_pretrained(
-   "/home/ysx/models/internlm-chat-7b",
-   trust_remote_code=True
+   "/home/ysx/models/chinese-alpaca-2-7b",
 )
-
-
-
-
-
 
 # Data
-dataset = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/zyqa")
-print(dataset)
 
-# newdata = dataset.select(range(100))
-mapped_dataset = dataset.map(
-    format_data,
-    remove_columns=['text'],
-    batched=True
+zydata = load_from_disk("/home/ysx/src/AI/llm_demo/data/datasets/zypt")
+print(zydata, "\n")
+data_token_0 = zydata.map(
+    format_zyya,
+    remove_columns=['text']
 )
 
-print(mapped_dataset)
-
+print(data_token_0, "\n")
+print(tokenizer.decode(data_token_0[0]["input_ids"]), "\n")
